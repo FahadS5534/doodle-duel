@@ -40,6 +40,7 @@ buildNumber.properties
 **/ios/Flutter/.last_build_id
 app.*.symbols
 app.*.map.json
+*.apk
 
 # Environment & Local Secrets
 .env
