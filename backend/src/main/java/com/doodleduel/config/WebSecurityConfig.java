@@ -41,6 +41,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/auth/**",
+                                "/api/v1/health",
+                                "/health",
                                 "/ws/**",
                                 "/error",
                                 "/actuator/**",
