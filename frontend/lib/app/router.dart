@@ -4,6 +4,7 @@ import '../features/auth/presentation/bloc/auth_state.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/welcome_screen.dart';
+import '../features/gameplay/drawing/warmup_sketchpad_screen.dart';
 import '../features/gameplay/presentation/game_container_screen.dart';
 import '../features/home/presentation/screens/home_lobby_screen.dart';
 import '../features/leaderboard/presentation/screens/leaderboard_screen.dart';
@@ -85,6 +86,10 @@ GoRouter createRouter(AuthBloc authBloc) {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/sketchpad',
+        builder: (context, state) => const WarmupSketchpadScreen(),
       ),
     ],
   );

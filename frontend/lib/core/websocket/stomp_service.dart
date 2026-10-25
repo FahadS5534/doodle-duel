@@ -110,6 +110,22 @@ class StompService {
   void _doSubscribeToRoom(String roomId) {
     unsubscribeAll();
 
+    // 0. Private user notifications queue (for secret word prompt & personal sync)
+    final unsubNotif = _client?.subscribe(
+      destination: '/user/queue/notifications',
+      callback: (StompFrame frame) {
+        if (frame.body != null) {
+          try {
+            final data = jsonDecode(frame.body!) as Map<String, dynamic>;
+            _privateNotificationsController.add(data);
+          } catch (e) {
+            debugPrint('Error parsing notification frame: $e');
+          }
+        }
+      },
+    );
+    if (unsubNotif != null) _activeSubscriptions.add(unsubNotif);
+
     // 1. Lobby topic
     final unsubLobby = _client?.subscribe(
       destination: '/topic/rooms/$roomId/lobby',

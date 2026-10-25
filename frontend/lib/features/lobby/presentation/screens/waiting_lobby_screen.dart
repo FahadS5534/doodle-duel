@@ -358,6 +358,32 @@ class _WaitingLobbyViewState extends State<_WaitingLobbyView> {
           _buildPill(Icons.tune, difficulty, AppColors.tertiary),
           const SizedBox(width: 8),
           _buildPill(Icons.category, category, AppColors.accentLavender),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () => context.push('/sketchpad'),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                color: AppColors.primaryCoral.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.primaryCoral.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.palette, size: 14, color: AppColors.primaryCoral),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Practice Doodle 🎨',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryCoral,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -60,6 +60,7 @@ class DrawingState extends Equatable {
 
 class DrawingCubit extends Cubit<DrawingState> {
   final String roomId;
+  final bool isLocal;
   final StompService _stompService = StompService();
   final _uuid = const Uuid();
 
@@ -71,8 +72,10 @@ class DrawingCubit extends Cubit<DrawingState> {
   final List<DrawingPointModel> _pointBuffer = [];
   String? _currentStrokeId;
 
-  DrawingCubit({required this.roomId}) : super(const DrawingState()) {
-    _drawingEventsSubscription = _stompService.drawingEvents.listen(_handleRemoteDrawingEvent);
+  DrawingCubit({required this.roomId, this.isLocal = false}) : super(const DrawingState()) {
+    if (!isLocal) {
+      _drawingEventsSubscription = _stompService.drawingEvents.listen(_handleRemoteDrawingEvent);
+    }
   }
 
   void setColor(String hex) {
@@ -136,7 +139,9 @@ class DrawingCubit extends Cubit<DrawingState> {
       final removed = updated.removeLast();
       _redoStack.add(removed);
 
-      _stompService.sendDrawingUndo(roomId);
+      if (!isLocal) {
+        _stompService.sendDrawingUndo(roomId);
+      }
 
       emit(state.copyWith(
         strokes: updated,
@@ -151,8 +156,10 @@ class DrawingCubit extends Cubit<DrawingState> {
       final restored = _redoStack.removeLast();
       final updated = List<DrawingStrokeModel>.from(state.strokes)..add(restored);
 
-      // Transmit restored stroke
-      _stompService.sendDrawingPoints(roomId, restored.toJson());
+      // Transmit restored stroke if online
+      if (!isLocal) {
+        _stompService.sendDrawingPoints(roomId, restored.toJson());
+      }
 
       emit(state.copyWith(
         strokes: updated,
@@ -163,7 +170,9 @@ class DrawingCubit extends Cubit<DrawingState> {
   }
 
   void clearCanvas() {
-    _stompService.sendDrawingClear(roomId);
+    if (!isLocal) {
+      _stompService.sendDrawingClear(roomId);
+    }
     _redoStack.clear();
     emit(state.copyWith(
       strokes: const [],
@@ -183,6 +192,7 @@ class DrawingCubit extends Cubit<DrawingState> {
   }
 
   void _scheduleBatchFlush() {
+    if (isLocal) return; // Zero latency local mode does not need network batching
     if (_pointBuffer.length >= 6) {
       _flushPoints(isFinished: false);
       return;
@@ -194,6 +204,7 @@ class DrawingCubit extends Cubit<DrawingState> {
   }
 
   void _flushPoints({required bool isFinished}) {
+    if (isLocal) return;
     if (_pointBuffer.isEmpty && !isFinished) return;
     if (_currentStrokeId == null) return;
 

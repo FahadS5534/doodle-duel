@@ -274,7 +274,8 @@ class _DrawingGameplayScreenState extends State<DrawingGameplayScreen> {
 
   // --- Secret Word Banner ---
   Widget _buildSecretPromptBanner(GameState state) {
-    final word = state.secretWord ?? 'Secret Prompt';
+    final word = state.secretWord;
+    final hasWord = word != null && word.trim().isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -317,20 +318,44 @@ class _DrawingGameplayScreenState extends State<DrawingGameplayScreen> {
                   ],
                 ),
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Text('🎨', style: TextStyle(fontSize: 18)),
-                    const SizedBox(width: 8),
-                    Text(
-                      word,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.primaryCoral,
+                if (hasWord)
+                  Row(
+                    children: [
+                      const Text('🎨', style: TextStyle(fontSize: 18)),
+                      const SizedBox(width: 8),
+                      Text(
+                        word,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primaryCoral,
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.primaryCoral,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Receiving prompt...',
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
             Container(

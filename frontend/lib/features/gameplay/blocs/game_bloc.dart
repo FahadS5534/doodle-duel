@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/storage/secure_storage_service.dart';
 import '../../../core/websocket/stomp_service.dart';
 import '../models/drawing_stroke_model.dart';
 
@@ -87,6 +88,7 @@ class GameState extends Equatable {
   final List<String> activeReactions;
   final Map<String, dynamic>? matchResults;
   final String? lastEndedSecretWord;
+  final String currentUserId;
 
   const GameState({
     this.phase = GamePhase.lobby,
@@ -107,9 +109,22 @@ class GameState extends Equatable {
     this.activeReactions = const [],
     this.matchResults,
     this.lastEndedSecretWord,
+    this.currentUserId = '',
   });
 
-  bool get isDrawer => drawerId.isNotEmpty && secretWord != null;
+  bool get isDrawer {
+    // 1. If secretWord is non-null and not empty, client is 100% the designated drawer
+    if (secretWord != null && secretWord!.trim().isNotEmpty) return true;
+
+    // 2. If drawerId matches currentUserId (case-insensitive & trimmed)
+    if (drawerId.isNotEmpty && currentUserId.isNotEmpty) {
+      final cleanDrawerId = drawerId.trim().toLowerCase();
+      final cleanUserId = currentUserId.trim().toLowerCase();
+      if (cleanDrawerId == cleanUserId) return true;
+    }
+
+    return false;
+  }
 
   GameState copyWith({
     GamePhase? phase,
@@ -131,6 +146,7 @@ class GameState extends Equatable {
     List<String>? activeReactions,
     Map<String, dynamic>? matchResults,
     String? lastEndedSecretWord,
+    String? currentUserId,
   }) {
     return GameState(
       phase: phase ?? this.phase,
@@ -151,6 +167,7 @@ class GameState extends Equatable {
       activeReactions: activeReactions ?? this.activeReactions,
       matchResults: matchResults ?? this.matchResults,
       lastEndedSecretWord: lastEndedSecretWord ?? this.lastEndedSecretWord,
+      currentUserId: currentUserId ?? this.currentUserId,
     );
   }
 
@@ -174,6 +191,7 @@ class GameState extends Equatable {
     activeReactions,
     matchResults,
     lastEndedSecretWord,
+    currentUserId,
   ];
 }
 
@@ -237,9 +255,19 @@ class GameBloc extends Bloc<GameEventAction, GameState> {
     on<_GameRawEventReceived>(_onRawEvent);
   }
 
-  void _onInit(GameInitRequested event, Emitter<GameState> emit) {
-    _currentUserId = event.currentUserId;
-    emit(state.copyWith(roomId: event.roomId));
+  Future<void> _onInit(GameInitRequested event, Emitter<GameState> emit) async {
+    _currentUserId = event.currentUserId.trim();
+    if (_currentUserId.isEmpty) {
+      final storedId = await SecureStorageService().getUserId();
+      if (storedId != null && storedId.isNotEmpty) {
+        _currentUserId = storedId.trim();
+      }
+    }
+
+    emit(state.copyWith(
+      roomId: event.roomId,
+      currentUserId: _currentUserId,
+    ));
 
     _gameSubscription?.cancel();
     _scoreSubscription?.cancel();
@@ -258,6 +286,9 @@ class GameBloc extends Bloc<GameEventAction, GameState> {
     _notificationSubscription = _stompService.privateNotifications.listen((data) {
       add(_GameRawEventReceived(data));
     });
+
+    // Request initial room synchronization
+    _stompService.requestSync(event.roomId);
   }
 
   void _onTick(_GameTick event, Emitter<GameState> emit) {
@@ -304,6 +335,7 @@ class GameBloc extends Bloc<GameEventAction, GameState> {
         totalRounds: totalRounds,
         players: players,
         guessFeed: const [],
+        currentUserId: _currentUserId,
       ));
     } else if (type == 'SECRET_WORD_PROMPT' && payload is Map) {
       // Received privately because this client is the drawer!
@@ -314,11 +346,12 @@ class GameBloc extends Bloc<GameEventAction, GameState> {
         secretWord: word,
         hint: hint,
         category: cat,
+        currentUserId: _currentUserId,
       ));
     } else if (type == 'ROUND_START' && payload is Map) {
       final rNumber = (payload['roundNumber'] as num?)?.toInt() ?? 1;
       final tRounds = (payload['totalRounds'] as num?)?.toInt() ?? 4;
-      final dId = payload['drawerId']?.toString() ?? '';
+      final dId = payload['drawerId']?.toString().trim() ?? '';
       final dName = payload['drawerName']?.toString() ?? 'Artist';
       final blanks = payload['letterBlanks']?.toString() ?? '';
       final duration = (payload['durationSeconds'] as num?)?.toInt() ?? 60;
@@ -326,7 +359,9 @@ class GameBloc extends Bloc<GameEventAction, GameState> {
 
       _startTimer(duration);
 
-      final isCurrentDrawer = dId == _currentUserId;
+      final cleanUserId = _currentUserId.trim().toLowerCase();
+      final isCurrentDrawer = (dId.isNotEmpty && cleanUserId.isNotEmpty && dId.toLowerCase() == cleanUserId) ||
+          (state.secretWord != null && state.secretWord!.isNotEmpty);
 
       emit(state.copyWith(
         phase: GamePhase.roundActive,
@@ -338,9 +373,15 @@ class GameBloc extends Bloc<GameEventAction, GameState> {
         totalDurationSeconds: duration,
         remainingSeconds: duration,
         category: cat,
+        currentUserId: _currentUserId,
         clearSecretWord: !isCurrentDrawer,
         players: state.players.map((p) => p.copyWith(hasGuessed: false)).toList(),
       ));
+
+      // If client is designated drawer but doesn't have secretWord yet, request immediate sync
+      if (isCurrentDrawer && state.secretWord == null && state.roomId.isNotEmpty) {
+        _stompService.requestSync(state.roomId);
+      }
     } else if (type == 'CORRECT_GUESS' && payload is Map) {
       final pId = payload['playerId']?.toString() ?? '';
       final pName = payload['playerName']?.toString() ?? 'Player';
@@ -434,8 +475,9 @@ class GameBloc extends Bloc<GameEventAction, GameState> {
           totalRounds: tRounds,
           drawerId: dId,
           remainingSeconds: remaining,
-          secretWord: word,
+          secretWord: (word != null && word.isNotEmpty) ? word : state.secretWord,
           letterBlanks: blanks,
+          currentUserId: _currentUserId,
         ));
       }
     }
