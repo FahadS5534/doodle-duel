@@ -1,0 +1,29 @@
+services:
+  # =======================================================
+  # 1. Angular Frontend (Static Site - Free, Global CDN)
+  # =======================================================
+  - type: web
+    name: doodle-duel-frontend
+    runtime: static
+    rootDir: angular-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist/angular-frontend/browser
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # =======================================================
+  # 2. Spring Boot Backend (Docker Web Service)
+  # =======================================================
+  - type: web
+    name: doodle-duel-backend
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8080
