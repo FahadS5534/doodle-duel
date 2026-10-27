@@ -15,7 +15,7 @@ A production-quality real-time multiplayer drawing and guessing game engineered 
 - **Relational Persistence**: PostgreSQL with Flyway database migrations (`V1__init_schema.sql`) tracking users, matches, rounds, individual guesses, player placements, and career statistics.
 - **Interactive OpenAPI 3 / Swagger Documentation**: Available at `http://localhost:8080/swagger-ui/index.html`.
 
-## 📱 App Screenshots
+## 📱 Mobile App (Flutter) Screenshots
 
 | 🏠 Home Lobby | 👥 Waiting Room Lobby |
 | :---: | :---: |
@@ -24,6 +24,12 @@ A production-quality real-time multiplayer drawing and guessing game engineered 
 | 🎨 Main Drawing Gameplay | 💡 Real-Time Guessing Gameplay |
 | :---: | :---: |
 | <img src="screenshots/03_drawing_gameplay.png" width="360" alt="Main Drawing Gameplay Screen" /> | <img src="screenshots/04_guessing_gameplay.png" width="360" alt="Guessing Gameplay Screen" /> |
+
+## 💻 Web App (Angular 19+) Screenshots
+
+| 🌟 Web Welcome & Guest Modal | 🏠 Web Home Lobby Bento Grid | 🎨 Web Practice Sketchpad |
+| :---: | :---: | :---: |
+| <img src="screenshots/05_web_welcome.png" width="320" alt="Web Welcome Screen" /> | <img src="screenshots/06_web_home.png" width="320" alt="Web Home Screen" /> | <img src="screenshots/07_web_sketchpad.png" width="320" alt="Web Sketchpad Screen" /> |
 
 ---
 
@@ -277,12 +283,48 @@ flutter test
 ```
 *Result: **0 issues found** on static analysis. **7/7 unit and widget tests passing**.*
 
+### Run Angular Build & Verification
+```bash
+cd angular-frontend
+npm run build
+```
+*Result: **0 errors, 0 warnings**. Production AOT bundle generated in `dist/angular-frontend/browser`.*
+
 ### Run Live End-to-End Game Script
 With Spring Boot running, execute the automated multi-player script:
 ```powershell
 powershell -ExecutionPolicy Bypass -File test_e2e.ps1
 ```
 *Verifies 2 independent player guest logins, room creation, code joining, readiness check, match initiation, room state transitions, and leaderboard persistence.*
+
+---
+
+## 🌐 Angular Web Application Architecture
+
+The web client (`angular-frontend/`) is engineered with **Angular 19+** standalone components, Angular Signals, and modern TypeScript:
+
+- **Warm Refined Glassmorphism UI**: Faithfully replicates the Flutter mobile experience using standard CSS custom properties matching `AppColors` (`#FBF8F3` parchment background, `#FF5733` primary coral, `#2EC4B6` mint, `#FFD166` yellow, and frosted glass cards).
+- **Cross-Platform HTML5 Vector Canvas**: Hardware-accelerated canvas utilizing normalized $[0.0, 1.0]$ coordinates for 100% interoperability with Flutter and Spring Boot. Features a 10-color tactile palette, brush slider, undo/clear, and real-time STOMP vector streaming.
+- **Offline Practice Sketchpad**: Full drawing suite with **150+ categorized prompts** (Easy, Medium, Hard, Pop Culture), prompt randomizer, and high-resolution PNG export (`doodle-duel-practice.png`).
+- **Web Audio API Sound Engine**: Synthesizes tactile pops, correct guess chimes, tick-tock countdowns, and victory fanfares without external audio asset downloads.
+- **Dynamic Cloud / Localhost Switcher**: Header controls allowing seamless switching between the Render cloud API (`https://doodle-duel-9wbf.onrender.com`) and local development server (`http://localhost:8080`).
+
+---
+
+## ☁️ Deployment & Cloud Hosting (Render)
+
+This repository includes a turnkey [`render.yaml`](render.yaml) blueprint for 1-click deployment on [Render](https://render.com).
+
+### 1. Deploy Angular Web Frontend (Static Site - Free, Global CDN)
+- **Root Directory**: `angular-frontend`
+- **Build Command**: `npm install && npm run build`
+- **Publish Directory**: `dist/angular-frontend/browser`
+- **SPA Routing Rewrite Rule**: In Render dashboard under **Redirects/Rewrites**, add `/*` $\rightarrow$ `/index.html` (Rewrite).
+
+### 2. Deploy Spring Boot Backend (Docker Web Service)
+- **Root Directory**: `backend`
+- **Runtime**: `Docker` (Automatically detects and builds `backend/Dockerfile` with Java 21)
+- **Port**: Render automatically provisions and maps the dynamic `$PORT` environment variable.
 
 ---
 
