@@ -1,7 +1,7 @@
 # 🎨 Doodle Duel
 > **"Draw it. Guess it. Own it."**
 
-A production-quality real-time multiplayer drawing and guessing mobile game engineered with a **Flutter** mobile client and a **Java 21 Spring Boot 3** authoritative backend, styled with a tactile **Warm Refined Glassmorphism** interface.
+A production-quality real-time multiplayer drawing and guessing game engineered with a **Flutter** mobile client, an **Angular 19+** modern web client, and a **Java 21 Spring Boot 3** authoritative backend, styled with a tactile **Warm Refined Glassmorphism** interface.
 
 ---
 
@@ -9,7 +9,8 @@ A production-quality real-time multiplayer drawing and guessing mobile game engi
 
 - **Visual Design System**: Faithfully reproduced from design references in `stitch_markdown_prompt_project_builder/`. Utilizes a warm root background (`#FBF8F3`), pure white canvas (`#FFFFFF`), vibrant primary coral buttons (`#FF5733`), mint accents (`#2EC4B6`), butter yellow badges (`#FFD166`), and translucent frosted glass cards.
 - **Authoritative Spring Boot 3 Game Engine**: Server-authoritative state machine, turn timers, word selection, secret-word isolation, and deterministic scoring.
-- **Real-Time Multiplayer STOMP Engine**: Vector drawing event streaming with normalized coordinates $[0.0, 1.0]$, stroke batching, undo/clear commands, guess verification, reaction emojis, and canvas recovery on reconnection.
+- **Cross-Platform Real-Time Vector Canvas**: Vector drawing event streaming with normalized coordinates $[0.0, 1.0]$ between Flutter, Angular Web, and Spring Boot, with stroke batching, undo/clear commands, and live guess feeds.
+- **Offline Practice Sketchpad**: Available in both mobile and web with 150+ categorized prompts, prompt randomizer, and high-resolution export.
 - **Security & Authorization**: Stateless JWT authentication with guest token generation, room isolation, and role-based drawing permissions.
 - **Relational Persistence**: PostgreSQL with Flyway database migrations (`V1__init_schema.sql`) tracking users, matches, rounds, individual guesses, player placements, and career statistics.
 - **Interactive OpenAPI 3 / Swagger Documentation**: Available at `http://localhost:8080/swagger-ui/index.html`.
@@ -50,7 +51,7 @@ doodle-duel/
 │   ├── src/test/              # JUnit 5 & Spring Boot integration test suites
 │   ├── Dockerfile             # Multi-stage production build (Eclipse Temurin Java 21)
 │   └── pom.xml
-├── frontend/
+├── frontend/                  # Flutter Mobile Client (iOS / Android)
 │   ├── lib/
 │   │   ├── app/
 │   │   │   ├── router.dart    # GoRouter declarative routing with auth guards
@@ -67,6 +68,15 @@ doodle-duel/
 │   │       └── profile/       # Career statistics, settings, logout
 │   ├── test/                  # Unit and widget test suite
 │   └── pubspec.yaml
+├── angular-frontend/          # Angular 19+ Web Client (Desktop / Mobile Browsers)
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── core/          # Signals AuthService, StompService, SoundService, Interceptors
+│   │   │   ├── features/      # Welcome, Auth, Home, Lobby, Gameplay, Sketchpad, Leaderboard
+│   │   │   └── shared/        # Navbar dock, AvatarWidget, AmbientDoodle
+│   │   ├── styles.css         # Warm glassmorphism design tokens & micro-animations
+│   │   └── main.ts
+│   └── package.json
 ├── stitch_markdown_prompt_project_builder/ # Design tokens, HTML layouts, and screenshots
 ├── docker-compose.yml         # Containerized PostgreSQL & Backend services
 ├── .env.example               # Environment variable templates
@@ -78,7 +88,14 @@ doodle-duel/
 
 ## 🛠️ Tech Stack
 
-### Frontend (Mobile App)
+### Web Client (Angular Frontend)
+- **Framework**: Angular 19+ (Standalone Components, Signals, Reactive Architecture)
+- **Styling**: Vanilla CSS Warm Refined Glassmorphism (`#FBF8F3` parchment root, frosted cards)
+- **Real-Time Client**: `@stomp/stompjs` & `sockjs-client` over WebSocket
+- **Audio Synthesizer**: Native Web Audio API sound synthesis (zero external audio asset latency)
+- **Celebrations**: `canvas-confetti`
+
+### Mobile App (Flutter Frontend)
 - **Framework**: Flutter 3.x (Dart 3 with sound null safety)
 - **State Management**: `flutter_bloc` & `equatable`
 - **Navigation**: `go_router`
@@ -103,6 +120,7 @@ doodle-duel/
 - **Java**: OpenJDK 21 LTS (`java -version`)
 - **Maven**: 3.9+ (`mvn -version`)
 - **Flutter**: 3.22+ (`flutter doctor`)
+- **Node.js**: v18.19+ or v20+ (`node -v`)
 - **Database**: PostgreSQL 16+ or Docker Desktop
 
 ---
@@ -142,12 +160,20 @@ mvn spring-boot:run
 ```
 Tomcat starts on `http://localhost:8080`. Flyway automatically runs database migrations on startup.
 
-#### 3. Run Flutter Frontend
+#### 3. Run Flutter Frontend (Mobile)
 ```bash
 cd ../frontend
 flutter pub get
 flutter run
 ```
+
+#### 4. Run Angular Web Frontend (Browser)
+```bash
+cd ../angular-frontend
+npm install
+npm start
+```
+The web app opens on `http://localhost:4200/`.
 
 ---
 

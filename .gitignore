@@ -48,3 +48,8 @@ app.*.map.json
 
 # Docker
 .docker/
+
+# Node & Angular
+**/node_modules/
+**/.angular/
+**/dist/

@@ -1,0 +1,335 @@
+/* ==========================================================================
+   Doodle Duel Design System (Warm Refined Glassmorphism)
+   Faithfully ported from Flutter's AppColors & AppTypography
+   ========================================================================== */
+
+:root {
+  /* Root Backgrounds */
+  --bg-root: #FBF8F3;
+  --bg-secondary: #F5EFEB;
+  --surface-canvas: #FFFFFF;
+
+  /* Brand Accents */
+  --primary-coral: #FF5733;
+  --primary-coral-light: #FF6B4A;
+  --primary-coral-dark: #E04826;
+  --primary-fixed: #FFDAD3;
+  --accent-mint: #2EC4B6;
+  --accent-mint-bright: #38D9A9;
+  --accent-yellow: #FFD166;
+  --accent-yellow-dark: #FFB703;
+  --accent-lavender: #B8A9C9;
+  --accent-lavender-subtle: #E8E0F0;
+
+  /* Semantic / Material */
+  --secondary: #006A62;
+  --secondary-container: #70F8E8;
+  --tertiary: #785A00;
+  --tertiary-container: #B38C27;
+  --error: #BA1A1A;
+  --error-container: #FFDAD6;
+
+  /* Text Hierarchy */
+  --text-primary: #22252A;
+  --text-secondary: #636B78;
+  --text-muted: #9AA0A6;
+  --text-on-primary: #FFFFFF;
+
+  /* Glass & Borders */
+  --border-glass: rgba(255, 255, 255, 0.75);
+  --border-subtle: rgba(40, 30, 20, 0.08);
+  --border-active: rgba(255, 87, 51, 0.4);
+  --outline-variant: #E4BEB6;
+  --glass-white: rgba(255, 255, 255, 0.90);
+  --glass-white-translucent: rgba(255, 255, 255, 0.85);
+  --glass-subtle: rgba(255, 255, 255, 0.65);
+  --surface-container-low: #F6F3EE;
+  --surface-container: #F0EDE9;
+  --surface-container-high: #EBE8E3;
+  --surface-container-highest: #E5E2DD;
+
+  /* Gradients */
+  --coral-gradient: linear-gradient(135deg, #FF6B4A 0%, #FF5733 50%, #FFA07A 100%);
+  --mint-gradient: linear-gradient(90deg, #2EC4B6 0%, #38D9A9 100%);
+  --yellow-gradient: linear-gradient(135deg, #FFD166 0%, #FFB703 100%);
+  --lavender-gradient: linear-gradient(135deg, #E8E0F0 0%, #B8A9C9 100%);
+
+  /* Shadows */
+  --glass-shadow: 0 10px 28px rgba(180, 150, 130, 0.14), 0 2px 8px rgba(180, 150, 130, 0.06);
+  --glass-shadow-hover: 0 16px 36px rgba(180, 150, 130, 0.20), 0 4px 12px rgba(180, 150, 130, 0.08);
+  --coral-button-shadow: 0 8px 20px rgba(255, 87, 51, 0.35);
+  --coral-button-shadow-hover: 0 12px 26px rgba(255, 87, 51, 0.45);
+  --mint-button-shadow: 0 8px 20px rgba(46, 196, 182, 0.35);
+  --dropdown-shadow: 0 18px 40px rgba(40, 30, 20, 0.12);
+
+  /* Radii */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* Font Families */
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ==========================================================================
+   Base & Reset
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--bg-root);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  background: none;
+  outline: none;
+}
+
+input, textarea, select {
+  font-family: var(--font-body);
+  outline: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   Reusable Utility Classes
+   ========================================================================== */
+
+.glass-card {
+  background: var(--glass-white);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.glass-card.interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow-hover);
+}
+
+.btn-coral {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--coral-gradient);
+  color: var(--text-on-primary);
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 14px 24px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--coral-button-shadow);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.btn-coral:hover {
+  transform: translateY(-1.5px);
+  box-shadow: var(--coral-button-shadow-hover);
+}
+
+.btn-coral:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 12px rgba(255, 87, 51, 0.25);
+}
+
+.btn-coral:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-mint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--mint-gradient);
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--mint-button-shadow);
+  transition: all 0.2s ease;
+}
+
+.btn-mint:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 10px 24px rgba(46, 196, 182, 0.45);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--glass-white);
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 13px 20px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid rgba(40, 30, 20, 0.1);
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: #FFFFFF;
+  border-color: var(--primary-coral);
+  color: var(--primary-coral);
+  transform: translateY(-1px);
+}
+
+.input-glass {
+  width: 100%;
+  padding: 14px 18px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(40, 30, 20, 0.08);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.input-glass:focus {
+  border-color: var(--primary-coral);
+  box-shadow: 0 0 0 3px rgba(255, 87, 51, 0.15);
+}
+
+.input-glass::placeholder {
+  color: var(--text-muted);
+}
+
+/* Badge Pills */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-mint {
+  background: rgba(46, 196, 182, 0.15);
+  color: #007A6E;
+}
+
+.badge-coral {
+  background: rgba(255, 87, 51, 0.15);
+  color: var(--primary-coral);
+}
+
+.badge-yellow {
+  background: rgba(255, 209, 102, 0.25);
+  color: #996B00;
+}
+
+.badge-lavender {
+  background: rgba(184, 169, 201, 0.25);
+  color: #634C7D;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(40, 30, 20, 0.12);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(40, 30, 20, 0.25);
+}
+
+/* Modal Backdrops */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(34, 37, 42, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(18px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes bounceSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes floatDoodle {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(6px, -10px) rotate(4deg); }
+  66% { transform: translate(-4px, -6px) rotate(-3deg); }
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 480px;
+  background: var(--glass-white);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 50px rgba(40, 30, 20, 0.2);
+  padding: 28px;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
